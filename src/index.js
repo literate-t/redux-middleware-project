@@ -8,11 +8,13 @@ import { legacy_createStore as createStore, applyMiddleware } from 'redux';
 import rootReducer from './modules';
 import logger from 'redux-logger';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import ReduxThunk from 'redux-thunk';
 
 // 우리가 만든 미들웨어 적용 끝
 const store = createStore(
   rootReducer,
-  composeWithDevTools(applyMiddleware(logger))
+  // logger는 마지막에 넣어주지 않으면 logger도 함수로 간주..
+  composeWithDevTools(applyMiddleware(ReduxThunk, logger))
 );
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
