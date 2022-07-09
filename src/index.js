@@ -4,10 +4,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
-import { legacy_createStore as createStore } from 'redux';
+import { legacy_createStore as createStore, applyMiddleware } from 'redux';
 import rootReducer from './modules';
+import myLogger from './middlewares/myLogger';
 
-const store = createStore(rootReducer);
+// 우리가 만든 미들웨어 적용 끝
+const store = createStore(rootReducer, applyMiddleware(myLogger));
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
