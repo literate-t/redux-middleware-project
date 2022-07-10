@@ -14,18 +14,21 @@ const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS';
 const GET_POST_ERROR = 'GET_POST_ERROR';
 
-// thunk creator function
-export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
+// 상세 페이지 들어갈 때 이전에 봤던 상세 페이지 잔상이 남는 문제 해결을 위함
+const CLEAR_POST = 'CLEAR_POST';
 
 // thunk creator function
+export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
 export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
+
+export const clearPost = () => ({ type: CLEAR_POST });
 
 const initialState = {
   posts: reducerUtils.initial(),
   post: reducerUtils.initial(),
 };
 
-const postsReducer = handleAsyncActions(GET_POSTS, 'posts');
+const postsReducer = handleAsyncActions(GET_POSTS, 'posts', true);
 const postReducer = handleAsyncActions(GET_POST, 'post');
 export default function posts(state = initialState, action) {
   switch (action.type) {
@@ -37,6 +40,11 @@ export default function posts(state = initialState, action) {
     case GET_POST_SUCCESS:
     case GET_POST_ERROR:
       return postReducer(state, action);
+    case CLEAR_POST:
+      return {
+        ...state,
+        post: reducerUtils.initial(),
+      };
     default:
       return state;
   }
