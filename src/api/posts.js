@@ -31,6 +31,6 @@ export const getPosts = async () => {
   return posts;
 };
 
-export const getPostsById = async (id) => {
+export const getPostById = async (id) => {
   return (await getPosts()).find((post) => id === post.id);
 };
