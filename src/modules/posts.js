@@ -6,7 +6,7 @@ import {
   createtPromiseSaga,
   createPromiseSagaById,
 } from '../lib/asyncUtils';
-import { takeEvery } from 'redux-saga/effects';
+import { takeEvery, select } from 'redux-saga/effects';
 
 // 하나의 API당 액션 3가지
 const GET_POSTS = 'GET_POSTS'; // 요청 시작
@@ -21,10 +21,12 @@ export const GO_TO_HOME = 'GO_TO_HOME';
 // 상세 페이지 들어갈 때 이전에 봤던 상세 페이지 잔상이 남는 문제 해결을 위해
 // 상세 페이지를 떠날 때 useEffect()의 cleanup 함수에서 상태를 null 처리하기 위함
 const CLEAR_POST = 'CLEAR_POST';
+const PRINT_STATE = 'PRINT_STATE';
 
 /* saga */
 export const getPosts = () => ({ type: GET_POSTS });
 export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
+export const printState = () => ({ type: PRINT_STATE });
 
 const getPostsSaga = createtPromiseSaga(GET_POSTS, postsAPI.getPosts);
 const getPostSaga = createPromiseSagaById(GET_POST, postsAPI.getPostById);
@@ -32,11 +34,17 @@ function* goToHomeSaga(action) {
   yield action.navigate('/');
 }
 
+function* printStateSaga() {
+  const state = yield select((state) => state.posts);
+  console.log(state);
+}
+
 // 액션을 모니터하는 함수
 export function* postsSaga() {
   yield takeEvery(GET_POSTS, getPostsSaga);
   yield takeEvery(GET_POST, getPostSaga);
   yield takeEvery(GO_TO_HOME, goToHomeSaga);
+  yield takeEvery(PRINT_STATE, printStateSaga);
 }
 
 /* thunk creator function */

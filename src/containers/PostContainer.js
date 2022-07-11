@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Post from '../components/Post';
 import { reducerUtils } from '../lib/asyncUtils';
-import { getPost, GO_TO_HOME } from '../modules/posts';
+import { getPost, GO_TO_HOME, printState } from '../modules/posts';
 
 function PostContainer({ postId }) {
   const { data, loading, error } = useSelector(
@@ -36,6 +36,7 @@ function PostContainer({ postId }) {
       <button onClick={() => dispatch({ type: GO_TO_HOME, navigate })}>
         Go to home
       </button>
+      <button onClick={() => dispatch(printState())}>print state</button>
       <Post post={data} />
     </>
   );
