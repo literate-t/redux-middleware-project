@@ -1,36 +1,11 @@
-const sleep = (n) => new Promise((resolve) => setTimeout(resolve, n));
-
-/**
- * @typedef Post
- * @property {number} id
- * @property {string} title
- * @property {string} body
- */
-
-/** @type {Post[]} */
-const posts = [
-  {
-    id: 1,
-    title: 'getting a job',
-    body: 'practice practice practice',
-  },
-  {
-    id: 2,
-    title: 'optimizing',
-    body: 'lazy loading?',
-  },
-  {
-    id: 3,
-    title: 'login',
-    body: 'using token',
-  },
-];
+import axios from 'axios';
 
 export const getPosts = async () => {
-  await sleep(500);
-  return posts;
+  const response = await axios.get('http://localhost:4000/posts');
+  return response.data;
 };
 
 export const getPostById = async (id) => {
-  return (await getPosts()).find((post) => id === post.id);
+  const response = await axios.get(`http://localhost:4000/posts/${id}`);
+  return response.data;
 };

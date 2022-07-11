@@ -11,7 +11,6 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import ReduxThunk from 'redux-thunk';
 //import { BrowserRouter } from 'react-router-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
 
 // 우리가 만든 미들웨어 적용 끝
 const store = createStore(
