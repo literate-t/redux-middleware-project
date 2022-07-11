@@ -3,8 +3,10 @@ import {
   handleAsyncActions,
   handleAsyncActionsById,
   reducerUtils,
+  createtPromiseSaga,
+  createPromiseSagaById,
 } from '../lib/asyncUtils';
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { takeEvery } from 'redux-saga/effects';
 
 // 하나의 API당 액션 3가지
 const GET_POSTS = 'GET_POSTS'; // 요청 시작
@@ -23,44 +25,13 @@ const CLEAR_POST = 'CLEAR_POST';
 export const getPosts = () => ({ type: GET_POSTS });
 export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
 
-function* getPostsSaga() {
-  try {
-    const posts = yield call(postsAPI.getPosts);
-    yield put({
-      type: GET_POSTS_SUCCESS,
-      payload: posts,
-    });
-  } catch (error) {
-    yield put({
-      type: GET_POSTS_ERROR,
-      payload: error,
-      error: true,
-    });
-  }
-}
+const getPostsSaga = createtPromiseSaga(GET_POSTS, postsAPI.getPosts);
+const getPostSaga = createPromiseSagaById(GET_POST, postsAPI.getPostById);
 
 // 액션을 모니터하는 함수
 export function* postsSaga() {
   yield takeEvery(GET_POSTS, getPostsSaga);
   yield takeEvery(GET_POST, getPostSaga);
-}
-
-function* getPostSaga(action) {
-  const id = action.payload;
-  try {
-    const post = yield call(postsAPI.getPostById, id);
-    yield put({
-      type: GET_POST_SUCCESS,
-      payload: post,
-      meta: id,
-    });
-  } catch (error) {
-    yield put({
-      type: GET_POST_ERROR,
-      payload: error,
-      error: true,
-    });
-  }
 }
 
 /* thunk creator function */
