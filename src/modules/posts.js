@@ -1,11 +1,10 @@
 import * as postsAPI from '../api/posts';
 import {
-  createPromiseThunk,
-  createPromiseThunkById,
   handleAsyncActions,
   handleAsyncActionsById,
   reducerUtils,
 } from '../lib/asyncUtils';
+import { call, put, takeEvery } from 'redux-saga/effects';
 
 // 하나의 API당 액션 3가지
 const GET_POSTS = 'GET_POSTS'; // 요청 시작
@@ -20,13 +19,58 @@ const GET_POST_ERROR = 'GET_POST_ERROR';
 // 상세 페이지를 떠날 때 useEffect()의 cleanup 함수에서 상태를 null 처리하기 위함
 const CLEAR_POST = 'CLEAR_POST';
 
-// thunk creator function
-export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
+/* saga */
+export const getPosts = () => ({ type: GET_POSTS });
+export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
 
-// 기존 구조는 post 상태를 객체 하나로 관리하기 때문에 CLEAR_POST 액션을 발생시키고 나면
-// 이전 데이터를 재사용할 수가 없었음
-//export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
-export const getPost = createPromiseThunkById(GET_POST, postsAPI.getPostById);
+function* getPostsSaga() {
+  try {
+    const posts = yield call(postsAPI.getPosts);
+    yield put({
+      type: GET_POSTS_SUCCESS,
+      payload: posts,
+    });
+  } catch (error) {
+    yield put({
+      type: GET_POSTS_ERROR,
+      payload: error,
+      error: true,
+    });
+  }
+}
+
+// 액션을 모니터하는 함수
+export function* postsSaga() {
+  yield takeEvery(GET_POSTS, getPostsSaga);
+  yield takeEvery(GET_POST, getPostSaga);
+}
+
+function* getPostSaga(action) {
+  const id = action.payload;
+  try {
+    const post = yield call(postsAPI.getPostById, id);
+    yield put({
+      type: GET_POST_SUCCESS,
+      payload: post,
+      meta: id,
+    });
+  } catch (error) {
+    yield put({
+      type: GET_POST_ERROR,
+      payload: error,
+      error: true,
+    });
+  }
+}
+
+/* thunk creator function */
+// export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
+
+// // 기존 구조는 post 상태를 객체 하나로 관리하기 때문에 CLEAR_POST 액션을 발생시키고 나면
+// // 이전 데이터를 재사용할 수가 없었음
+// //export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
+// export const getPost = createPromiseThunkById(GET_POST, postsAPI.getPostById);
+
 export const goToHome = (navigate) => (dispatch, getState) => {
   navigate('/');
 };
