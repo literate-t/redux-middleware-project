@@ -27,8 +27,10 @@ export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
 // 이전 데이터를 재사용할 수가 없었음
 //export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
 export const getPost = createPromiseThunkById(GET_POST, postsAPI.getPostById);
-
-export const clearPost = () => ({ type: CLEAR_POST });
+export const goToHome = (navigate) => (dispatch, getState) => {
+  navigate('/');
+};
+//export const clearPost = () => ({ type: CLEAR_POST });
 
 const initialState = {
   posts: reducerUtils.initial(),
@@ -39,6 +41,7 @@ const initialState = {
 const postsReducer = handleAsyncActions(GET_POSTS, 'posts', true);
 const postReducer = handleAsyncActionsById(GET_POST, 'post', true);
 //const postReducer = handleAsyncActions(GET_POST, 'post');
+
 export default function posts(state = initialState, action) {
   switch (action.type) {
     case GET_POSTS:

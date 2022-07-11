@@ -1,5 +1,5 @@
 // type: GET_POST, GET_POSTS
-export const createPromiseThunk = (type, promiseCreator) => {
+export const createPromiseThunk = (type, promiseFn) => {
   const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
 
   return (param) => async (dispatch) => {
@@ -7,7 +7,7 @@ export const createPromiseThunk = (type, promiseCreator) => {
     try {
       dispatch({
         type: SUCCESS,
-        payload: await promiseCreator(param),
+        payload: await promiseFn(param),
       });
     } catch (e) {
       dispatch({
