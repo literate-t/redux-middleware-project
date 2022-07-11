@@ -15,7 +15,7 @@ function PostContainer({ postId }) {
 
     // cleanup
     // unmount되거나 혹은 만약 postId가 바뀌어서 effect 함수가 호출되기 직전에 호출
-    // 이 방법의 문제는 클릭한 포스트가 캐싱이 안 된다는
+    // 이 방법의 문제는 클릭한 포스트가 캐싱이 안 된다는 것
     // 이걸 개선하려면 구조를 바꿔야 함
     return () => {
       //dispatch(clearPost());
