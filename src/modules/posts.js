@@ -14,22 +14,67 @@ const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS';
 const GET_POST_ERROR = 'GET_POST_ERROR';
 
-// 상세 페이지 들어갈 때 이전에 봤던 상세 페이지 잔상이 남는 문제 해결을 위함
+// 상세 페이지 들어갈 때 이전에 봤던 상세 페이지 잔상이 남는 문제 해결을 위해
+// 상세 페이지를 떠날 때 useEffect()의 cleanup 함수에서 상태를 null 처리하기 위함
 const CLEAR_POST = 'CLEAR_POST';
 
 // thunk creator function
 export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
-export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
+
+// 기존 구조는 post 상태를 객체 하나로 관리하기 때문에 CLEAR_POST 액션을 발생시키고 나면
+// 이전 데이터를 재사용할 수가 없었음
+//export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
+export const getPost = (id) => async (dispatch) => {
+  dispatch({ type: GET_POST, meta: id });
+  try {
+    const payload = await postsAPI.getPostById(id);
+    dispatch({ type: GET_POST_SUCCESS, payload, meta: id });
+  } catch (error) {
+    dispatch({ type: GET_POSTS_ERROR, payload: error, error: true, meta: id });
+  }
+};
 
 export const clearPost = () => ({ type: CLEAR_POST });
 
 const initialState = {
   posts: reducerUtils.initial(),
-  post: reducerUtils.initial(),
+  post: {},
+  //post: reducerUtils.initial(),
 };
 
 const postsReducer = handleAsyncActions(GET_POSTS, 'posts', true);
-const postReducer = handleAsyncActions(GET_POST, 'post');
+const postReducer = (state, action) => {
+  const id = action.meta;
+  switch (action.type) {
+    case GET_POST:
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          [id]: reducerUtils.loading(state.post[id]?.data),
+        },
+      };
+    case GET_POST_SUCCESS:
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          [id]: reducerUtils.success(action.payload),
+        },
+      };
+    case GET_POST_ERROR:
+      return {
+        ...state,
+        post: {
+          ...state.post,
+          [id]: reducerUtils.error(action.payload),
+        },
+      };
+    default:
+      return state;
+  }
+};
+//const postReducer = handleAsyncActions(GET_POST, 'post');
 export default function posts(state = initialState, action) {
   switch (action.type) {
     case GET_POSTS:
