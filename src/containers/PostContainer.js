@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Post from '../components/Post';
 import { reducerUtils } from '../lib/asyncUtils';
-import { getPost, goToHome } from '../modules/posts';
+import { getPost, GO_TO_HOME } from '../modules/posts';
 
 function PostContainer({ postId }) {
-  const navigate = useNavigate();
   const { data, loading, error } = useSelector(
     (state) => state.posts.post[postId] || reducerUtils.initial()
   );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
     if (data) return;
     dispatch(getPost(postId));
@@ -30,7 +30,12 @@ function PostContainer({ postId }) {
 
   return (
     <>
-      <button onClick={() => dispatch(goToHome(navigate))}>Go to home</button>
+      {/* thunk */}
+      {/* <button onClick={() => dispatch(goToHome(navigate))}>Go to home</button> */}
+      {/* saga */}
+      <button onClick={() => dispatch({ type: GO_TO_HOME, navigate })}>
+        Go to home
+      </button>
       <Post post={data} />
     </>
   );

@@ -16,6 +16,7 @@ const GET_POSTS_ERROR = 'GET_POSTS_ERROR';
 const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS';
 const GET_POST_ERROR = 'GET_POST_ERROR';
+export const GO_TO_HOME = 'GO_TO_HOME';
 
 // 상세 페이지 들어갈 때 이전에 봤던 상세 페이지 잔상이 남는 문제 해결을 위해
 // 상세 페이지를 떠날 때 useEffect()의 cleanup 함수에서 상태를 null 처리하기 위함
@@ -27,11 +28,15 @@ export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
 
 const getPostsSaga = createtPromiseSaga(GET_POSTS, postsAPI.getPosts);
 const getPostSaga = createPromiseSagaById(GET_POST, postsAPI.getPostById);
+function* goToHomeSaga(action) {
+  yield action.navigate('/');
+}
 
 // 액션을 모니터하는 함수
 export function* postsSaga() {
   yield takeEvery(GET_POSTS, getPostsSaga);
   yield takeEvery(GET_POST, getPostSaga);
+  yield takeEvery(GO_TO_HOME, goToHomeSaga);
 }
 
 /* thunk creator function */
@@ -42,9 +47,13 @@ export function* postsSaga() {
 // //export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
 // export const getPost = createPromiseThunkById(GET_POST, postsAPI.getPostById);
 
-export const goToHome = (navigate) => (dispatch, getState) => {
-  navigate('/');
-};
+// thunk
+// export const goToHome = (navigate) => (dispatch, getState) => {
+//   navigate('/');
+// };
+
+export const goToHome = () => ({ type: GO_TO_HOME });
+
 //export const clearPost = () => ({ type: CLEAR_POST });
 
 const initialState = {
